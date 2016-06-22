@@ -126,7 +126,7 @@
         var zero = [];
         for (var yr = 1959; yr < 2012; yr++) {
             zero.push([yr, 0]);
-        };
+        }
 
         Flotr.draw(
             document.getElementById("chart"), [{
@@ -151,7 +151,7 @@
                     show: true
                 },
                 yaxis: 2
-            }, ], {
+            } ], {
                 title: "Global Temperature and CO<sub>2</sub> Concentration (NOAA Data)",
                 grid: {
                     horizontalLines: false,
@@ -167,7 +167,7 @@
                     tickFormatter: function(val) {
                         return val + " °C";
                     }
-                },
+                }
             }
         );
     }
