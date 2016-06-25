@@ -4,28 +4,15 @@
 <head>
     <meta charset="utf-8">
     <title></title>
-    <style>
-    label {
-        cursor: pointer;
-        display: block;
-        padding-left: 20px;
-        min-height: 20px;
-        margin-bottom: 5px;
-    }
-    </style>
 </head>
 
 <body>
-    <div id='visualization'>
-        <div>Gross Domestic Product (Current US$ in Trillions)</div>
-        <div id='chart' style="width:500px;height:333px;float:left;"></div>
-        <div id='controls' style="float:left;">
-            <p>Select Regions to Include:</p>
-        </div>
-    </div>
-    <!--[if lt IE 9]><script src="js/excanvas.js"></script><![endif]-->
+    <div id='chart' style="width:500px;height:333px;float:left;"></div>
+    <button id='unzoom'>Reset Zoom</button>
+    <!--[if lt IE 9]><script src="js/excanvas.min.js"></script><![endif]-->
     <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/flot/0.7/jquery.flot.min.js"></script>
+    <script src="js/jquery.flot.selection.js"></script>
     <script>
     $(function() {
 
@@ -36,89 +23,54 @@
         var sas = [[1960,0.0478247732151856],[1961,0.0383225958869648],[1962,0.0388874166372837],[1963,0.0433593791506997],[1964,0.049312969226400806],[1965,0.0753559563796575],[1966,0.06323585646800489],[1967,0.0696076427752867],[1968,0.0730763830538578],[1969,0.0802343499298316],[1970,0.086417938527656],[1971,0.0920998975067543],[1972,0.0934253781138569],[1973,0.10710018826296401],[1974,0.12908199902446402],[1975,0.137467192139294],[1976,0.134237452196152],[1977,0.155501137089905],[1978,0.17700129114045499],[1979,0.19822748152728],[1980,0.23950133755200698],[1981,0.253323520001952],[1982,0.26216138766225],[1983,0.27763291864135103],[1984,0.27745895731883696],[1985,0.300252692811231],[1986,0.318138309467094],[1987,0.353457233833646],[1988,0.379356926533544],[1989,0.38176068169897304],[1990,0.411674940336935],[1991,0.367122939515263],[1992,0.38985315145683197],[1993,0.385975784343698],[1994,0.438017870225571],[1995,0.486561796291813],[1996,0.526479595262552],[1997,0.5524917029445889],[1998,0.560339831029537],[1999,0.5987139908417021],[2000,0.622822096306051],[2001,0.637169916840114],[2002,0.671288997652188],[2003,0.78410428905078],[2004,0.9111221170662099],[2005,1.04470909960678],[2006,1.1851178245492],[2007,1.50437408329898],[2008,1.5345956549431599],[2009,1.68265470743355],[2010,2.04610459367539],[2011,2.27108779326152]];
         var ssf = [[1960,0.0297069247951595],[1961,0.030839996076188498],[1962,0.0334481365054735],[1963,0.0383823611974043],[1964,0.0373850974886355],[1965,0.0416450915296278],[1966,0.0449663430505477],[1967,0.0443902237290978],[1968,0.0474989382955448],[1969,0.0544475973839497],[1970,0.06407395567512329],[1971,0.0651193411871049],[1972,0.073484524388417],[1973,0.0940813608163604],[1974,0.122647461479448],[1975,0.13510131992306598],[1976,0.146968976317949],[1977,0.161442020615343],[1978,0.18036146588774601],[1979,0.215716578215229],[1980,0.271497709190136],[1981,0.271614311096045],[1982,0.25356040764095],[1983,0.23715413820644102],[1984,0.226106529627964],[1985,0.210647386817865],[1986,0.23276451310215202],[1987,0.27515897477430296],[1988,0.289718130440563],[1989,0.300906379088857],[1990,0.300398027434827],[1991,0.310977090696925],[1992,0.309478936793128],[1993,0.294653422749536],[1994,0.288787623577666],[1995,0.32726678754607397],[1996,0.33979176406183503],[1997,0.3487737245021],[1998,0.326510741354684],[1999,0.327930693483309],[2000,0.33695797490608503],[2001,0.32866718429288705],[2002,0.345227225537291],[2003,0.44651030536218],[2004,0.557848242700248],[2005,0.653503724718657],[2006,0.7602800186887111],[2007,0.8820445340076181],[2008,0.999925234189761],[2009,0.93629057710226],[2010,1.14097465468216],[2011,1.28322590173042]];
 
-        var source = [{
-            data: eas,
-            show: true,
-            color: "#E41A1C",
-            name: "East Asia & Pacific"
-        }, {
-            data: ecs,
-            show: true,
-            color: "#377EB8",
-            name: "Europe & Central Asia"
-        }, {
-            data: lcn,
-            show: true,
-            color: "#4DAF4A",
-            name: "Latin America & Caribbean"
-        }, {
-            data: mea,
-            show: true,
-            color: "#984EA3",
-            name: "Middle East & North Africa"
-        }, {
-            data: sas,
-            show: true,
-            color: "#FF7F00",
-            name: "South Asia"
-        }, {
-            data: ssf,
-            show: true,
-            color: "#FFFF33",
-            name: "Sub-Saharan Africa"
-        }];
-
-        var plotObj = $.plot(
-            $("#chart"),
-            $.map(
-                $.grep(source, function(obj) {
-                    return obj.show;
-                }),
-                function(obj) {
-                    return {
-                        data: obj.data,
-                        color: obj.color
-                    };
+        var $el = $("#chart"),
+            data = [{
+                data: eas,
+                label: "East Asia & Pacific"
+            }, {
+                data: ecs,
+                label: "Europe & Central Asia"
+            }, {
+                data: lcn,
+                label: "Latin America & Caribbean"
+            }, {
+                data: mea,
+                label: "Middle East & North Africa"
+            }, {
+                data: sas,
+                label: "South Asia"
+            }, {
+                data: ssf,
+                label: "Sub-Saharan Africa"
+            }, ],
+            options = {
+                legend: {
+                    position: "nw"
+                },
+                selection: {
+                    mode: "xy"
                 }
-            )
-        );
+            },
+            plotObj;
 
-        $.each(source, function(idx, obj) {
-            var input = $("<input>").attr("id", "chk-" + idx).attr("type", "checkbox");
-            if (obj.show) {
-                $(input).prop("checked", true);
-            }
-            var span = $("<span>").css({
-                'background-color': obj.color,
-                'display': "inline-block",
-                'height': "0.9em",
-                'width': "0.9em",
-                'margin-right': "0.25em"
-            });
-            var label = $("<label>").addClass("checkbox").append(input).append(span).append(obj.name);
-            $("#controls").append(label);
-        });
-
-        $("input[id^='chk-']").click(function(ev) {
-            var idx = ev.target.id.substr(4);
-            source[idx].show = !source[idx].show;
-            plotObj.setData(
-                $.map(
-                    $.grep(source, function(obj) {
-                        return obj.show;
-                    }),
-                    function(obj) {
-                        return {
-                            data: obj.data,
-                            color: obj.color
-                        };
+        $el.on("plotselected", function(ev, ranges) {
+            plotObj = $.plot($el, data,
+                $.extend(true, {}, options, {
+                    xaxis: {
+                        min: ranges.xaxis.from,
+                        max: ranges.xaxis.to
+                    },
+                    yaxis: {
+                        min: ranges.yaxis.from,
+                        max: ranges.yaxis.to
                     }
-                )
+                })
             );
-            <!-- plotObj.setupGrid(); -->
-            plotObj.draw();
-        })
-
+        });
+        plotObj = $.plot($el, data, options);
+        $("#unzoom").click(function() {
+            plotObj = $.plot($el, data, options);
+        });
     });
     </script>
 </body>
